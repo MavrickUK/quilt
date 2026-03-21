@@ -63,6 +63,11 @@
     if (e.key === "Enter") addColor();
   });
 
+  // Tapping the preview swatch opens the native color picker
+  colorPreview.addEventListener("click", () => {
+    newColorInput.click();
+  });
+
   // Sync: when the native picker changes, update preview swatch
   newColorInput.addEventListener("input", () => {
     colorPreview.style.background = newColorInput.value;

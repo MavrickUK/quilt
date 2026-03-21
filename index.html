@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Quilt Pattern Generator</h1>
+  <h1>1Cell Quilt Pattern Generator</h1>
   <div class="app">
     <aside class="settings">
       <section>
@@ -31,12 +31,11 @@
 
         <p class="sub-label">Custom color:</p>
         <div class="add-color">
-          <label class="color-preview" id="color-preview">
-            <input type="color" id="new-color" value="#e66465">
-          </label>
+          <div class="color-preview" id="color-preview"></div>
+          <input type="color" id="new-color" value="#e66465">
           <input type="text" id="new-color-name" placeholder="Color name" autocomplete="off">
-          <button type="button" id="add-color-btn">Add Color</button>
         </div>
+        <button type="button" id="add-color-btn" class="add-btn">Add Color</button>
       </section>
 
       <div id="warnings"></div>
