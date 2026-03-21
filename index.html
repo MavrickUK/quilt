@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quilt Pattern Generator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Quilt Pattern Generator</h1>
+  <div class="app">
+    <aside class="settings">
+      <section>
+        <h2>Grid Size</h2>
+        <div class="field">
+          <label for="rows">Rows</label>
+          <input type="number" id="rows" min="1" max="50" value="10">
+        </div>
+        <div class="field">
+          <label for="cols">Columns</label>
+          <input type="number" id="cols" min="1" max="50" value="10">
+        </div>
+      </section>
+
+      <section>
+        <h2>Colors</h2>
+        <div id="color-list"></div>
+        <div class="add-color">
+          <input type="color" id="new-color" value="#e66465">
+          <input type="text" id="new-color-name" placeholder="Color name">
+          <button id="add-color-btn">Add</button>
+        </div>
+      </section>
+
+      <div id="warnings"></div>
+
+      <button id="generate-btn" class="primary-btn">Generate Pattern</button>
+    </aside>
+
+    <main>
+      <div id="quilt-grid" class="quilt-grid"></div>
+      <div id="legend" class="legend"></div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

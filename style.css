@@ -1,0 +1,238 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f5f5f5;
+  color: #333;
+  padding: 1rem;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+}
+
+.app {
+  display: flex;
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* --- Settings panel --- */
+.settings {
+  min-width: 260px;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.settings section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,.1);
+}
+
+.settings h2 {
+  font-size: 1rem;
+  margin-bottom: .6rem;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: .4rem;
+}
+
+.field label {
+  width: 70px;
+  font-size: .9rem;
+}
+
+.field input[type="number"] {
+  width: 70px;
+  padding: .3rem .4rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: .9rem;
+}
+
+/* Color list */
+#color-list {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  margin-bottom: .6rem;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.color-entry {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  background: #fafafa;
+  padding: .3rem .5rem;
+  border-radius: 4px;
+  border: 1px solid #eee;
+}
+
+.color-entry .swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  flex-shrink: 0;
+}
+
+.color-entry .name {
+  flex: 1;
+  font-size: .85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.color-entry button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #999;
+  padding: 0 .2rem;
+}
+
+.color-entry button:hover {
+  color: #e33;
+}
+
+/* Add color row */
+.add-color {
+  display: flex;
+  gap: .4rem;
+  align-items: center;
+}
+
+.add-color input[type="color"] {
+  width: 36px;
+  height: 30px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 1px;
+  cursor: pointer;
+}
+
+.add-color input[type="text"] {
+  flex: 1;
+  padding: .3rem .4rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: .85rem;
+}
+
+.add-color button,
+.primary-btn {
+  padding: .4rem .8rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: .85rem;
+}
+
+.add-color button {
+  background: #6c8;
+  color: #fff;
+}
+
+.add-color button:hover {
+  background: #5b7;
+}
+
+.primary-btn {
+  background: #47a;
+  color: #fff;
+  font-size: 1rem;
+  padding: .6rem 1rem;
+  width: 100%;
+}
+
+.primary-btn:hover {
+  background: #369;
+}
+
+/* Warnings */
+#warnings {
+  font-size: .85rem;
+  color: #b80;
+}
+
+/* --- Main area --- */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Quilt grid */
+.quilt-grid {
+  display: grid;
+  gap: 2px;
+  background: #ddd;
+  padding: 2px;
+  border-radius: 4px;
+  max-width: 100%;
+  overflow: auto;
+}
+
+.quilt-grid .cell {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  min-width: 16px;
+  min-height: 16px;
+}
+
+/* Legend */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .85rem;
+  background: #fff;
+  padding: .25rem .5rem;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.08);
+}
+
+.legend-item .swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .app {
+    flex-direction: column;
+  }
+  .settings {
+    max-width: 100%;
+  }
+}
