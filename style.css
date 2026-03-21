@@ -122,12 +122,26 @@ h1 {
 }
 
 .add-color input[type="color"] {
-  width: 36px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 1px;
   cursor: pointer;
+}
+
+.add-color input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+
+#new-color-hex {
+  width: 70px;
+  flex-shrink: 0;
+  padding: .3rem .4rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: .85rem;
+  font-family: monospace;
 }
 
 .add-color input[type="text"] {
@@ -150,6 +164,8 @@ h1 {
 .add-color button {
   background: #6c8;
   color: #fff;
+  min-height: 44px;
+  min-width: 44px;
 }
 
 .add-color button:hover {

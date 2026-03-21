@@ -10,6 +10,7 @@
   const colsInput = document.getElementById("cols");
   const colorListEl = document.getElementById("color-list");
   const newColorInput = document.getElementById("new-color");
+  const newColorHex = document.getElementById("new-color-hex");
   const newColorName = document.getElementById("new-color-name");
   const addColorBtn = document.getElementById("add-color-btn");
   const generateBtn = document.getElementById("generate-btn");
@@ -32,12 +33,19 @@
   }
 
   function addColor() {
-    const hex = newColorInput.value;
+    // Prefer the hex text input if it has a valid value, else use the picker
+    let hex = newColorHex.value.trim();
+    if (hex && !hex.startsWith("#")) hex = "#" + hex;
+    if (!/^#[0-9a-fA-F]{6}$/.test(hex)) hex = newColorInput.value;
+
     const name = newColorName.value.trim() || hex;
     colors.push({ hex, name });
     newColorName.value = "";
+    newColorHex.value = "";
     // Cycle to a new default color for convenience
-    newColorInput.value = randomHex();
+    const next = randomHex();
+    newColorInput.value = next;
+    newColorHex.placeholder = next;
     renderColorList();
   }
 
@@ -55,6 +63,14 @@
   addColorBtn.addEventListener("click", addColor);
   newColorName.addEventListener("keydown", (e) => {
     if (e.key === "Enter") addColor();
+  });
+  newColorHex.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") addColor();
+  });
+
+  // Sync: when the picker changes, update the hex text field
+  newColorInput.addEventListener("input", () => {
+    newColorHex.value = newColorInput.value;
   });
 
   // --- Generation ---
