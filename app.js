@@ -11,7 +11,6 @@
   const colorListEl = document.getElementById("color-list");
   const newColorInput = document.getElementById("new-color");
   const colorPreview = document.getElementById("color-preview");
-  const newColorHex = document.getElementById("new-color-hex");
   const newColorName = document.getElementById("new-color-name");
   const addColorBtn = document.getElementById("add-color-btn");
   const generateBtn = document.getElementById("generate-btn");
@@ -35,21 +34,10 @@
   }
 
   function addColor(overrideHex) {
-    let hex;
-    if (overrideHex) {
-      hex = overrideHex;
-    } else {
-      // Prefer the hex text input if it has a valid value, else use the picker
-      hex = newColorHex.value.trim();
-      if (hex && !hex.startsWith("#")) hex = "#" + hex;
-      if (!/^#[0-9a-fA-F]{6}$/.test(hex)) hex = newColorInput.value;
-    }
-
+    const hex = overrideHex || newColorInput.value;
     const name = newColorName.value.trim() || hex;
     colors.push({ hex, name });
     newColorName.value = "";
-    newColorHex.value = "";
-    // Update preview
     updatePreview(hex);
     renderColorList();
   }
@@ -74,24 +62,10 @@
   newColorName.addEventListener("keydown", (e) => {
     if (e.key === "Enter") addColor();
   });
-  newColorHex.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") addColor();
-  });
 
-  // Sync: when the native picker changes, update hex field + preview swatch
+  // Sync: when the native picker changes, update preview swatch
   newColorInput.addEventListener("input", () => {
-    newColorHex.value = newColorInput.value;
     colorPreview.style.background = newColorInput.value;
-  });
-
-  // Sync: when hex text field changes, update preview swatch
-  newColorHex.addEventListener("input", () => {
-    let v = newColorHex.value.trim();
-    if (v && !v.startsWith("#")) v = "#" + v;
-    if (/^#[0-9a-fA-F]{6}$/.test(v)) {
-      colorPreview.style.background = v;
-      newColorInput.value = v;
-    }
   });
 
   // --- Quick-pick palette ---

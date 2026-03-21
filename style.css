@@ -184,17 +184,7 @@ h1 {
   border: none;
 }
 
-#new-color-hex {
-  flex: 1;
-  padding: .5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-family: monospace;
-  min-height: 44px;
-}
-
-.add-color-row2 input[type="text"] {
+.add-color input[type="text"] {
   flex: 1;
   padding: .5rem;
   border: 1px solid #ccc;
@@ -203,7 +193,7 @@ h1 {
   min-height: 44px;
 }
 
-.add-color-row2 button,
+.add-color button,
 .primary-btn {
   padding: .5rem .8rem;
   border: none;
@@ -213,7 +203,7 @@ h1 {
   -webkit-tap-highlight-color: transparent;
 }
 
-.add-color-row2 button {
+.add-color button {
   background: #6c8;
   color: #fff;
   min-height: 48px;
@@ -222,8 +212,8 @@ h1 {
   font-weight: bold;
 }
 
-.add-color-row2 button:hover,
-.add-color-row2 button:active {
+.add-color button:hover,
+.add-color button:active {
   background: #5b7;
 }
 
