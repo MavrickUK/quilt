@@ -10,6 +10,7 @@
   const colsInput = document.getElementById("cols");
   const colorListEl = document.getElementById("color-list");
   const newColorInput = document.getElementById("new-color");
+  const colorPreview = document.getElementById("color-preview");
   const newColorHex = document.getElementById("new-color-hex");
   const newColorName = document.getElementById("new-color-name");
   const addColorBtn = document.getElementById("add-color-btn");
@@ -17,6 +18,7 @@
   const gridEl = document.getElementById("quilt-grid");
   const legendEl = document.getElementById("legend");
   const warningsEl = document.getElementById("warnings");
+  const paletteEl = document.getElementById("palette");
 
   // --- Color management ---
   function renderColorList() {
@@ -32,21 +34,29 @@
     });
   }
 
-  function addColor() {
-    // Prefer the hex text input if it has a valid value, else use the picker
-    let hex = newColorHex.value.trim();
-    if (hex && !hex.startsWith("#")) hex = "#" + hex;
-    if (!/^#[0-9a-fA-F]{6}$/.test(hex)) hex = newColorInput.value;
+  function addColor(overrideHex) {
+    let hex;
+    if (overrideHex) {
+      hex = overrideHex;
+    } else {
+      // Prefer the hex text input if it has a valid value, else use the picker
+      hex = newColorHex.value.trim();
+      if (hex && !hex.startsWith("#")) hex = "#" + hex;
+      if (!/^#[0-9a-fA-F]{6}$/.test(hex)) hex = newColorInput.value;
+    }
 
     const name = newColorName.value.trim() || hex;
     colors.push({ hex, name });
     newColorName.value = "";
     newColorHex.value = "";
-    // Cycle to a new default color for convenience
-    const next = randomHex();
-    newColorInput.value = next;
-    newColorHex.placeholder = next;
+    // Update preview
+    updatePreview(hex);
     renderColorList();
+  }
+
+  function updatePreview(hex) {
+    colorPreview.style.background = hex;
+    newColorInput.value = hex;
   }
 
   function removeColor(idx) {
@@ -60,7 +70,11 @@
     }
   });
 
-  addColorBtn.addEventListener("click", addColor);
+  addColorBtn.addEventListener("click", () => addColor());
+  addColorBtn.addEventListener("touchend", (e) => {
+    e.preventDefault();
+    addColor();
+  });
   newColorName.addEventListener("keydown", (e) => {
     if (e.key === "Enter") addColor();
   });
@@ -68,9 +82,43 @@
     if (e.key === "Enter") addColor();
   });
 
-  // Sync: when the picker changes, update the hex text field
+  // Sync: when the native picker changes, update hex field + preview swatch
   newColorInput.addEventListener("input", () => {
     newColorHex.value = newColorInput.value;
+    colorPreview.style.background = newColorInput.value;
+  });
+
+  // Sync: when hex text field changes, update preview swatch
+  newColorHex.addEventListener("input", () => {
+    let v = newColorHex.value.trim();
+    if (v && !v.startsWith("#")) v = "#" + v;
+    if (/^#[0-9a-fA-F]{6}$/.test(v)) {
+      colorPreview.style.background = v;
+      newColorInput.value = v;
+    }
+  });
+
+  // --- Quick-pick palette ---
+  const PALETTE = [
+    "#e74c3c", "#e91e63", "#e67e22", "#f1c40f", "#f9e79f",
+    "#2ecc71", "#1abc9c", "#3498db", "#9b59b6", "#795548",
+    "#607d8b", "#ecf0f1", "#bdc3c7", "#34495e", "#2c3e50",
+    "#ff6f61", "#6b5b95", "#88b04b", "#f7cac9", "#92a8d1",
+  ];
+
+  PALETTE.forEach((hex) => {
+    const swatch = document.createElement("div");
+    swatch.className = "palette-swatch";
+    swatch.style.background = hex;
+    swatch.setAttribute("role", "button");
+    swatch.setAttribute("aria-label", "Add color " + hex);
+    const handler = (e) => {
+      e.preventDefault();
+      addColor(hex);
+    };
+    swatch.addEventListener("click", handler);
+    swatch.addEventListener("touchend", handler);
+    paletteEl.appendChild(swatch);
   });
 
   // --- Generation ---
@@ -234,7 +282,7 @@
     );
   }
 
-  // Seed a few default colours for convenience
+  // Seed default colours
   [
     { hex: "#e74c3c", name: "Red" },
     { hex: "#3498db", name: "Blue" },
@@ -248,4 +296,5 @@
     { hex: "#607d8b", name: "Slate" },
   ].forEach((c) => colors.push(c));
   renderColorList();
+  updatePreview("#e66465");
 })();

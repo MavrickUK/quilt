@@ -25,11 +25,20 @@
       <section>
         <h2>Colors</h2>
         <div id="color-list"></div>
+
+        <p class="sub-label">Quick pick:</p>
+        <div id="palette" class="palette"></div>
+
+        <p class="sub-label">Custom color:</p>
         <div class="add-color">
-          <input type="color" id="new-color" value="#e66465">
-          <input type="text" id="new-color-hex" placeholder="#hex" maxlength="7">
-          <input type="text" id="new-color-name" placeholder="Color name">
-          <button id="add-color-btn">Add</button>
+          <label class="color-preview" id="color-preview">
+            <input type="color" id="new-color" value="#e66465">
+          </label>
+          <input type="text" id="new-color-hex" placeholder="e.g. FF5733" maxlength="7" autocomplete="off" autocorrect="off" spellcheck="false">
+        </div>
+        <div class="add-color-row2">
+          <input type="text" id="new-color-name" placeholder="Color name" autocomplete="off">
+          <button type="button" id="add-color-btn">Add Color</button>
         </div>
       </section>
 
