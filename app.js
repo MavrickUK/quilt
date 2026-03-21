@@ -71,10 +71,6 @@
   });
 
   addColorBtn.addEventListener("click", () => addColor());
-  addColorBtn.addEventListener("touchend", (e) => {
-    e.preventDefault();
-    addColor();
-  });
   newColorName.addEventListener("keydown", (e) => {
     if (e.key === "Enter") addColor();
   });
@@ -112,12 +108,7 @@
     swatch.style.background = hex;
     swatch.setAttribute("role", "button");
     swatch.setAttribute("aria-label", "Add color " + hex);
-    const handler = (e) => {
-      e.preventDefault();
-      addColor(hex);
-    };
-    swatch.addEventListener("click", handler);
-    swatch.addEventListener("touchend", handler);
+    swatch.addEventListener("click", () => addColor(hex));
     paletteEl.appendChild(swatch);
   });
 
