@@ -4,6 +4,7 @@
   // --- State ---
   const colors = []; // { hex, name }
   let grid = [];     // 2D array of color indices
+  let lastFlat = []; // flat array from last generation (for legend re-render)
 
   // --- DOM refs ---
   const rowsInput = document.getElementById("rows");
@@ -18,6 +19,8 @@
   const legendEl = document.getElementById("legend");
   const warningsEl = document.getElementById("warnings");
   const paletteEl = document.getElementById("palette");
+  const noAdjacentCb = document.getElementById("no-adjacent");
+  const showNumbersCb = document.getElementById("show-numbers");
 
   // --- Color management ---
   function renderColorList() {
@@ -94,6 +97,20 @@
   // --- Generation ---
   generateBtn.addEventListener("click", generate);
 
+  // Re-generate when checkbox toggles (if a pattern already exists)
+  noAdjacentCb.addEventListener("change", () => {
+    if (grid.length > 0) generate();
+  });
+
+  // Toggle numbers on existing grid without regenerating
+  showNumbersCb.addEventListener("change", () => {
+    if (grid.length > 0) {
+      const rows = grid.length;
+      const cols = grid[0].length;
+      renderGrid(grid, rows, cols);
+    }
+  });
+
   function generate() {
     const rows = parseInt(rowsInput.value, 10) || 1;
     const cols = parseInt(colsInput.value, 10) || 1;
@@ -107,6 +124,7 @@
 
     // Build balanced flat array
     const flat = buildBalancedArray(total, n);
+    lastFlat = flat;
 
     // Shuffle
     fisherYatesShuffle(flat);
@@ -118,18 +136,26 @@
     }
 
     // Swap-optimise to reduce adjacent same-color neighbours
-    optimiseGrid(grid, rows, cols);
+    const strict = noAdjacentCb.checked;
+    if (strict) {
+      optimiseGridStrict(grid, flat, rows, cols, n);
+    } else {
+      optimiseGrid(grid, rows, cols);
+    }
 
     // Show warnings
+    const conflicts = totalConflicts(grid, rows, cols);
+    let warn = "";
     if (total % n !== 0) {
       const base = Math.floor(total / n);
       const extra = total % n;
-      warningsEl.textContent =
-        `${total} cells / ${n} colors doesn\u2019t divide evenly. ` +
-        `${n - extra} color(s) used ${base}x, ${extra} color(s) used ${base + 1}x.`;
-    } else {
-      warningsEl.textContent = "";
+      warn += `${total} cells / ${n} colors doesn\u2019t divide evenly. ` +
+        `${n - extra} color(s) used ${base}x, ${extra} color(s) used ${base + 1}x. `;
     }
+    if (strict && conflicts > 0) {
+      warn += `Could not fully eliminate adjacencies (${conflicts} remaining). Try fewer colors or a larger grid.`;
+    }
+    warningsEl.textContent = warn;
 
     renderGrid(grid, rows, cols);
     renderLegend(flat, n);
@@ -155,8 +181,7 @@
   }
 
   /**
-   * Swap-based optimisation: repeatedly try to reduce
-   * the number of adjacent same-color pairs.
+   * Light optimisation: best-effort reduction of adjacent same-color pairs.
    */
   function optimiseGrid(g, rows, cols) {
     const maxPasses = 200;
@@ -165,44 +190,103 @@
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           if (adjacentConflicts(g, r, c, rows, cols) === 0) continue;
-          // Try swapping with a random other cell
           const tr = Math.floor(Math.random() * rows);
           const tc = Math.floor(Math.random() * cols);
           if (tr === r && tc === c) continue;
           if (g[r][c] === g[tr][tc]) continue;
-
-          const before =
-            adjacentConflicts(g, r, c, rows, cols) +
-            adjacentConflicts(g, tr, tc, rows, cols);
-
-          // Swap
-          [g[r][c], g[tr][tc]] = [g[tr][tc], g[r][c]];
-
-          const after =
-            adjacentConflicts(g, r, c, rows, cols) +
-            adjacentConflicts(g, tr, tc, rows, cols);
-
-          if (after < before) {
-            improved = true;
-          } else {
-            // Undo
-            [g[r][c], g[tr][tc]] = [g[tr][tc], g[r][c]];
-          }
+          if (trySwap(g, r, c, tr, tc, rows, cols)) improved = true;
         }
       }
       if (!improved) break;
     }
   }
 
-  /** Count how many direct neighbours share the same color. */
+  /**
+   * Strict optimisation: aggressively try to reach zero adjacent conflicts.
+   * Re-shuffles and retries if a single pass gets stuck.
+   */
+  function optimiseGridStrict(g, flat, rows, cols, numColors) {
+    const maxRetries = 20;
+    const maxPasses = 500;
+    const swapAttempts = 10; // candidates per conflict cell
+
+    for (let retry = 0; retry < maxRetries; retry++) {
+      if (totalConflicts(g, rows, cols) === 0) return;
+
+      for (let pass = 0; pass < maxPasses; pass++) {
+        let improved = false;
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            if (adjacentConflicts(g, r, c, rows, cols) === 0) continue;
+            for (let s = 0; s < swapAttempts; s++) {
+              const tr = Math.floor(Math.random() * rows);
+              const tc = Math.floor(Math.random() * cols);
+              if (tr === r && tc === c) continue;
+              if (g[r][c] === g[tr][tc]) continue;
+              if (trySwap(g, r, c, tr, tc, rows, cols)) {
+                improved = true;
+                break;
+              }
+            }
+          }
+        }
+        if (totalConflicts(g, rows, cols) === 0) return;
+        if (!improved) break;
+      }
+
+      // Re-shuffle and rebuild grid for next retry
+      if (totalConflicts(g, rows, cols) > 0 && retry < maxRetries - 1) {
+        fisherYatesShuffle(flat);
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            g[r][c] = flat[r * cols + c];
+          }
+        }
+      }
+    }
+  }
+
+  /** Try a swap; keep it only if it reduces total conflicts at both cells. */
+  function trySwap(g, r, c, tr, tc, rows, cols) {
+    const before =
+      adjacentConflicts(g, r, c, rows, cols) +
+      adjacentConflicts(g, tr, tc, rows, cols);
+    [g[r][c], g[tr][tc]] = [g[tr][tc], g[r][c]];
+    const after =
+      adjacentConflicts(g, r, c, rows, cols) +
+      adjacentConflicts(g, tr, tc, rows, cols);
+    if (after < before) return true;
+    // Undo
+    [g[r][c], g[tr][tc]] = [g[tr][tc], g[r][c]];
+    return false;
+  }
+
+  /** Count how many of the 8 surrounding neighbours share the same color. */
   function adjacentConflicts(g, r, c, rows, cols) {
     const v = g[r][c];
     let count = 0;
-    if (r > 0 && g[r - 1][c] === v) count++;
-    if (r < rows - 1 && g[r + 1][c] === v) count++;
-    if (c > 0 && g[r][c - 1] === v) count++;
-    if (c < cols - 1 && g[r][c + 1] === v) count++;
+    for (let dr = -1; dr <= 1; dr++) {
+      for (let dc = -1; dc <= 1; dc++) {
+        if (dr === 0 && dc === 0) continue;
+        const nr = r + dr;
+        const nc = c + dc;
+        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && g[nr][nc] === v) {
+          count++;
+        }
+      }
+    }
     return count;
+  }
+
+  /** Total adjacent conflicts across the entire grid. */
+  function totalConflicts(g, rows, cols) {
+    let total = 0;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        total += adjacentConflicts(g, r, c, rows, cols);
+      }
+    }
+    return total / 2; // each pair counted twice
   }
 
   // --- Rendering ---
@@ -215,12 +299,20 @@
     gridEl.style.gridTemplateRows = `repeat(${rows}, ${cellSize}px)`;
     gridEl.innerHTML = "";
 
+    const showNums = showNumbersCb.checked;
+
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
+        const ci = g[r][c];
         const cell = document.createElement("div");
         cell.className = "cell";
-        cell.style.background = colors[g[r][c]].hex;
-        cell.title = colors[g[r][c]].name;
+        cell.style.background = colors[ci].hex;
+        cell.title = colors[ci].name;
+        if (showNums) {
+          cell.textContent = ci + 1;
+          cell.style.color = luminance(colors[ci].hex) > 0.4 ? "#000" : "#fff";
+          cell.style.fontSize = Math.max(9, cellSize * 0.4) + "px";
+        }
         gridEl.appendChild(cell);
       }
     }
@@ -237,12 +329,20 @@
       item.className = "legend-item";
       item.innerHTML =
         `<div class="swatch" style="background:${c.hex}"></div>` +
-        `<span>${c.name} &times; ${counts[i]}</span>`;
+        `<span>${c.name} (${i + 1}) &times; ${counts[i]}</span>`;
       legendEl.appendChild(item);
     });
   }
 
   // --- Helpers ---
+  /** Relative luminance of a hex color (0 = dark, 1 = light). */
+  function luminance(hex) {
+    const r = parseInt(hex.slice(1, 3), 16) / 255;
+    const g = parseInt(hex.slice(3, 5), 16) / 255;
+    const b = parseInt(hex.slice(5, 7), 16) / 255;
+    return 0.299 * r + 0.587 * g + 0.114 * b;
+  }
+
   function randomHex() {
     return (
       "#" +
@@ -267,4 +367,5 @@
   ].forEach((c) => colors.push(c));
   renderColorList();
   updatePreview("#e66465");
+  generate();
 })();

@@ -17,36 +17,49 @@ body {
 
 h1 {
   text-align: center;
-  margin-bottom: 1rem;
-  font-size: 1.6rem;
+  margin-bottom: .5rem;
+  font-size: 1.4rem;
 }
 
 .app {
   display: flex;
-  gap: 1.5rem;
-  max-width: 1200px;
+  gap: 1rem;
+  max-width: 1400px;
   margin: 0 auto;
+  align-items: flex-start;
 }
 
-/* --- Settings panel --- */
-.settings {
-  min-width: 260px;
-  max-width: 300px;
+/* --- Side panels --- */
+.colors-panel,
+.controls-panel {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: .75rem;
+  flex-shrink: 0;
 }
 
-.settings section {
+.colors-panel {
+  min-width: 240px;
+  max-width: 280px;
+}
+
+.controls-panel {
+  min-width: 180px;
+  max-width: 220px;
+}
+
+.colors-panel section,
+.controls-panel section {
   background: #fff;
   border-radius: 8px;
-  padding: 1rem;
+  padding: .75rem;
   box-shadow: 0 1px 3px rgba(0,0,0,.1);
 }
 
-.settings h2 {
-  font-size: 1rem;
-  margin-bottom: .6rem;
+.colors-panel h2,
+.controls-panel h2 {
+  font-size: .95rem;
+  margin-bottom: .4rem;
 }
 
 .field {
@@ -58,6 +71,16 @@ h1 {
 
 .field label {
   width: 70px;
+  font-size: .9rem;
+}
+
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.checkbox-field label {
   font-size: .9rem;
 }
 
@@ -73,26 +96,26 @@ h1 {
 #color-list {
   display: flex;
   flex-direction: column;
-  gap: .35rem;
-  margin-bottom: .6rem;
-  max-height: 320px;
+  gap: .3rem;
+  margin-bottom: .5rem;
+  max-height: 220px;
   overflow-y: auto;
 }
 
 .color-entry {
   display: flex;
   align-items: center;
-  gap: .4rem;
+  gap: .3rem;
   background: #fafafa;
-  padding: .3rem .5rem;
+  padding: .2rem .4rem;
   border-radius: 4px;
   border: 1px solid #eee;
 }
 
 .color-entry .swatch {
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
   border: 1px solid #ccc;
   flex-shrink: 0;
 }
@@ -134,8 +157,8 @@ h1 {
 }
 
 .palette-swatch {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 4px;
   border: 2px solid transparent;
   cursor: pointer;
@@ -194,15 +217,15 @@ h1 {
 .add-btn {
   display: block;
   width: 100%;
-  padding: .7rem;
-  margin-top: .4rem;
+  padding: .5rem;
+  margin-top: .3rem;
   border: none;
   border-radius: 6px;
   background: #6c8;
   color: #fff;
-  font-size: 1.1rem;
+  font-size: .95rem;
   font-weight: bold;
-  min-height: 52px;
+  min-height: 44px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
@@ -245,7 +268,8 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: .75rem;
+  min-width: 0;
 }
 
 /* Quilt grid */
@@ -264,6 +288,12 @@ main {
   border-radius: 2px;
   min-width: 16px;
   min-height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  line-height: 1;
+  user-select: none;
 }
 
 /* Legend */
@@ -293,11 +323,27 @@ main {
 }
 
 /* Responsive */
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .app {
-    flex-direction: column;
+    flex-wrap: wrap;
   }
-  .settings {
+  .colors-panel {
     max-width: 100%;
+    width: 100%;
+  }
+  .controls-panel {
+    max-width: 100%;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .controls-panel section {
+    flex: 1;
+    min-width: 140px;
+  }
+  .controls-panel .primary-btn {
+    flex: 1;
+    min-width: 140px;
   }
 }

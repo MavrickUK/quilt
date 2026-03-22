@@ -9,19 +9,7 @@
 <body>
   <h1>1Cell Quilt Pattern Generator</h1>
   <div class="app">
-    <aside class="settings">
-      <section>
-        <h2>Grid Size</h2>
-        <div class="field">
-          <label for="rows">Rows</label>
-          <input type="number" id="rows" min="1" max="50" value="10">
-        </div>
-        <div class="field">
-          <label for="cols">Columns</label>
-          <input type="number" id="cols" min="1" max="50" value="10">
-        </div>
-      </section>
-
+    <aside class="colors-panel">
       <section>
         <h2>Colors</h2>
         <div id="color-list"></div>
@@ -37,16 +25,41 @@
         </div>
         <button type="button" id="add-color-btn" class="add-btn">Add Color</button>
       </section>
-
-      <div id="warnings"></div>
-
-      <button id="generate-btn" class="primary-btn">Generate Pattern</button>
     </aside>
 
     <main>
       <div id="quilt-grid" class="quilt-grid"></div>
       <div id="legend" class="legend"></div>
     </main>
+
+    <aside class="controls-panel">
+      <section>
+        <h2>Grid Size</h2>
+        <div class="field">
+          <label for="rows">Rows</label>
+          <input type="number" id="rows" min="1" max="50" value="10">
+        </div>
+        <div class="field">
+          <label for="cols">Columns</label>
+          <input type="number" id="cols" min="1" max="50" value="10">
+        </div>
+      </section>
+
+      <section>
+        <div class="checkbox-field">
+          <input type="checkbox" id="no-adjacent" checked>
+          <label for="no-adjacent">No adjacent same colors</label>
+        </div>
+        <div class="checkbox-field">
+          <input type="checkbox" id="show-numbers">
+          <label for="show-numbers">Show color numbers</label>
+        </div>
+      </section>
+
+      <div id="warnings"></div>
+
+      <button id="generate-btn" class="primary-btn">Generate Pattern</button>
+    </aside>
   </div>
 
   <script src="app.js"></script>
