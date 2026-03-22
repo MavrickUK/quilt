@@ -89,7 +89,7 @@
     swatch.className = "palette-swatch";
     swatch.style.background = hex;
     swatch.setAttribute("role", "button");
-    swatch.setAttribute("aria-label", "Add color " + hex);
+    swatch.setAttribute("aria-label", "Add colour " + hex);
     swatch.addEventListener("click", () => addColor(hex));
     paletteEl.appendChild(swatch);
   });
@@ -118,7 +118,7 @@
     const n = colors.length;
 
     if (n === 0) {
-      warningsEl.textContent = "Add at least one color.";
+      warningsEl.textContent = "Add at least one colour.";
       return;
     }
 
@@ -149,11 +149,11 @@
     if (total % n !== 0) {
       const base = Math.floor(total / n);
       const extra = total % n;
-      warn += `${total} cells / ${n} colors doesn\u2019t divide evenly. ` +
-        `${n - extra} color(s) used ${base}x, ${extra} color(s) used ${base + 1}x. `;
+      warn += `${total} cells / ${n} colours doesn\u2019t divide evenly. ` +
+        `${n - extra} colour(s) used ${base}x, ${extra} colour(s) used ${base + 1}x. `;
     }
     if (strict && conflicts > 0) {
-      warn += `Could not fully eliminate adjacencies (${conflicts} remaining). Try fewer colors or a larger grid.`;
+      warn += `Could not fully eliminate adjacencies (${conflicts} remaining). Try fewer colours or a larger grid.`;
     }
     warningsEl.textContent = warn;
 
